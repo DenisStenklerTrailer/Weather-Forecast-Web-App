@@ -11,5 +11,6 @@ def get_data(place, days, kind=None):
 
     return filtered_content
 
+
 if __name__ == "__main__":
     print(get_data(place="Koritnica", days=2))

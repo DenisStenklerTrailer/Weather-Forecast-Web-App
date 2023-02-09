@@ -12,20 +12,25 @@ st.subheader(f"{option} for the next {days} days in {place}")
 filtered_content = []
 
 if place: #We need to first provide a place
-    filtered_content = backend.get_data(place, days, option)
 
-    #Create a temperature plot
-    if option == "Temperature":
-        temperatures = [temp['main']['temp'] for temp in filtered_content]
-        date = [date["dt_txt"] for date in filtered_content]
-        figure = px.line(x=date, y=temperatures, labels={"x": "Date", "y": "Temperature (°C)"})
-        st.plotly_chart(figure)
+    try:
+        filtered_content = backend.get_data(place, days, option)
 
-    if option == "Sky":
-        images = {"Clear": "images/clear.png", "Clouds": "images/cloud.png",
-                  "Rain": "images/rain.png", "Snow": "images/snow.png"}
-        sky_conditions = [sky['weather'][0]['main'] for sky in filtered_content]
-        image_paths = [images[condition] for condition in sky_conditions]
-        st.image(image_paths, width=150)
+        #Create a temperature plot
+        if option == "Temperature":
+            temperatures = [temp['main']['temp'] for temp in filtered_content]
+            date = [date["dt_txt"] for date in filtered_content]
+            figure = px.line(x=date, y= [float(temperature) / 10 for temperature in temperatures], labels={"x": "Date", "y": "Temperature (°C)"})
+            st.plotly_chart(figure)
+
+        if option == "Sky":
+            images = {"Clear": "images/clear.png", "Clouds": "images/cloud.png",
+                      "Rain": "images/rain.png", "Snow": "images/snow.png"}
+            sky_conditions = [sky['weather'][0]['main'] for sky in filtered_content]
+            image_paths = [images[condition] for condition in sky_conditions]
+            st.image(image_paths, width=150)
+
+    except KeyError:
+        st.error("Place does not exist!")
 
 
